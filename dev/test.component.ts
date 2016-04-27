@@ -1,4 +1,5 @@
 import {Component} from 'angular2/core'
+
 import {ConfigComponent} from './config.component'
 
 
@@ -11,18 +12,22 @@ const URL = 'http://127.0.0.1:3003/upload';
             <h2>status: {{uploadStatus}} </h2>
             
             <div id="menu">
-                <div *ngFor="#data of dataJson?.pages" colspan='4'>
-                    <div *ngFor="#shape of data.shapes">
-                
-                        {{data.pid}}
-                        {{data.pname}}
-                        {{shape.id}}
-                        <a href='#' (click)="loadConfigure();">{{shape.name}}</a>
-                        <blockqoute>{{shape.value}}</blockqoute>
+                <ul *ngFor="#data of dataJson?.pages" colspan='4'>
+                    <li>PageID {{data.pid}} : {{data.pname}}</li>
+                    
+                    <ul *ngFor="#shape of data.shapes">
+                        <li>{{shape.id}} : <a href='#' (click)="checkbox(data, shape);">{{shape.name}}</a>
+                        <!--<blockqoute>{{shape.value}}</blockqoute>-->
                         <input type="checkbox" name="shapes" value="{{data.pid}}.{{shape.id}}" 
                                 (change)="checkbox(data, shape)">
-                    </div>
-                </div>
+                        </li>
+                        <ul *ngIf="shape?.properties">
+                            <li *ngFor="#prop of shape.properties">{{prop.label}}: {{prop.value}}</li>
+                        </ul>
+                    </ul>
+                    
+                    <hr/>
+                </ul>
             </div>
                 
             <div id="content">
@@ -33,9 +38,10 @@ const URL = 'http://127.0.0.1:3003/upload';
                     <button type="button" (click)="extract();">Load XML</button>
                 </form>
                 <hr/>
+                
+                <config [page]="page" [shape]="shape" [selectedShape]="selectedShape" (click)="clicked()"></config>
+                
             </div>
-
-            <config [data]="data"></config>
 
         </scetion>
     `,
@@ -51,12 +57,14 @@ export class TestComponent {
   file: File;
   filesToUpload: Array<File>;
   attrText;
-  
+  page;
+  shape;
+  property;
+  selectedShape = [];
   constructor() {
         this.filesToUpload = [];
   }
   
-    
   upload() {
         this.makeFileRequest("http://127.0.0.1:3003/uploads", [], this.filesToUpload).then((result) => {
             this.filesToUpload = []
@@ -86,10 +94,19 @@ export class TestComponent {
 
     }
     
+    selectedData(page, shape){
+        this.page = page;
+        this.shape = shape;
+    }
+    
     checkbox(page, shape) {
         //recipient.selected = (recipient.selected) ? false : true;
+        //alert(page.pid + ':' + page.pname + ':' + shape.id + this.page.pid + ':' +this.shape.id);
         
-        alert(page.pid + ':' + page.pname + ':' + shape.id);
+        this.selectedShape.push([[page.pid,shape.id]]);
+        //alert(this.selectedShape);
+        
+        this.selectedData(page, shape)
         console.log(shape.id + ':' + shape.name);
     }
     
@@ -97,7 +114,9 @@ export class TestComponent {
        this.attrText = !this.attrText;
     }  
     
-    
+    clicked(){
+        //alert(this.page.pid + ':' + this.shape.id);
+    }
     
     fileChangeEvent(fileInput: any){
         this.uploadStatus = null; 
