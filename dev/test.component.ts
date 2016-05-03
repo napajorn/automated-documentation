@@ -1,5 +1,4 @@
 import {Component} from 'angular2/core'
-
 import {ConfigComponent} from './config.component'
 
 
@@ -16,7 +15,7 @@ const URL = 'http://127.0.0.1:3003/upload';
                     <li>PageID {{data.pid}} : {{data.pname}}</li>
                     
                     <ul *ngFor="#shape of data.shapes">
-                        <li>{{shape.id}} : <a href='#' (click)="checkbox(data, shape);">{{shape.name}}</a>
+                        <li>{{shape.id}} : <a href='#' (click)="checkbox(data, shape, $event);">{{shape.name.split('.',1)}}</a>
                         <!--<blockqoute>{{shape.value}}</blockqoute>-->
                         <input type="checkbox" name="shapes" value="{{data.pid}}.{{shape.id}}" 
                                 (change)="checkbox(data, shape)">
@@ -83,6 +82,7 @@ export class TestComponent {
             this.uploadStatus = 'Extract Data.xml to JSON format';
             this.dataJson =  eval('(' + result + ')');
             this.debugJson = result;
+            localStorage.clear();
         }, (error) => {
             this.uploadStatus = 'Not found Data.xml'
             this.dataJson = null;
@@ -99,9 +99,8 @@ export class TestComponent {
         this.shape = shape;
     }
     
-    checkbox(page, shape) {
+    checkbox(page, shape, event) {
         //recipient.selected = (recipient.selected) ? false : true;
-        //alert(page.pid + ':' + page.pname + ':' + shape.id + this.page.pid + ':' +this.shape.id);
         
         this.selectedShape.push([[page.pid,shape.id]]);
         //alert(this.selectedShape);

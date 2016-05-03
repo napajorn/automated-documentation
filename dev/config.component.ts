@@ -21,14 +21,9 @@ import {TextboxComponent} from './textbox.component'
             </ul>
     
            
-           <text-component *ngIf="shape.name == 'Header'">Loading...</text-component>
+           <text-component *ngIf="shape.name.split('.',1) == 'Header'" [page]="page" [shape]="shape">Loading...</text-component>
            
-            <div *ngIf="shape.name == 'Header'">
-                <p>Header</p>
-                <input type='text'>
-                <button (click)=saveConfig()>Save</button>
-            </div>
-           
+
 
         </div>
         
@@ -52,11 +47,6 @@ export class ConfigComponent {
         } else {
             return false;
         }
-    }
-    
-    
-    saveConfig() {
-        alert('test');
     }
     
 }
